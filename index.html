@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>비즈렌탈랩 오늘 할 일</title>
+<meta name="theme-color" content="#0f172a" />
+<meta name="description" content="비즈렌탈랩 오늘 할 일 — 하루 순서대로 체크하는 오늘의 업무" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icon.svg" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="비즈렌탈랩 오늘" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #0b1220;
+    color: #e8eefb;
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Malgun Gothic", "맑은 고딕", system-ui, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .app { max-width: 480px; margin: 0 auto; padding: 0 14px calc(30px + env(safe-area-inset-bottom)); }
+
+  /* top bar */
+  .topbar {
+    position: sticky; top: 0; z-index: 20;
+    margin: 0 -14px; padding: calc(11px + env(safe-area-inset-top)) 14px 11px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: rgba(11, 18, 32, .93);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid #16233a;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; letter-spacing: -.2px; color: #dbe4f2; min-width: 0; }
+  .brand span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(180deg, #93c5fd, #818cf8); box-shadow: 0 0 10px rgba(147, 197, 253, .7); flex: 0 0 auto; }
+  .pill {
+    flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: #bfdbfe;
+    background: rgba(147, 197, 253, .12); border: 1px solid rgba(147, 197, 253, .3);
+    border-radius: 999px; padding: 6px 11px; font-family: inherit; cursor: pointer;
+  }
+  .pill:active { background: rgba(147, 197, 253, .22); }
+
+  /* date nav */
+  .datenav { display: flex; align-items: center; gap: 8px; margin: 14px 0 12px; }
+  .nav-btn {
+    flex: 0 0 auto; width: 40px; height: 40px; border-radius: 12px;
+    background: #17233a; border: 1px solid #25354f; color: #cbd5e1;
+    font-size: 20px; line-height: 1; font-family: inherit; cursor: pointer;
+    display: grid; place-items: center; padding: 0 0 3px;
+  }
+  .nav-btn:active { background: #1d2b45; }
+  .nav-btn[disabled] { opacity: .28; cursor: default; }
+  .day-label { flex: 1; text-align: center; font-size: 17.5px; font-weight: 800; letter-spacing: -.3px; color: #f2f6ff; }
+
+  /* progress */
+  .progress { display: flex; align-items: center; gap: 10px; }
+  .track { flex: 1; height: 6px; border-radius: 999px; background: #1b2740; overflow: hidden; }
+  .fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #93c5fd, #a5b4fc); transition: width .35s ease; }
+  .counter { font-size: 12px; color: #8fa0bb; font-variant-numeric: tabular-nums; min-width: 44px; text-align: right; }
+  .summary { margin: 11px 0 15px; font-size: 13px; line-height: 1.5; color: #8fa0bb; }
+
+  /* main card */
+  .card {
+    background: #141e31; border: 1px solid #2a3b57; border-radius: 18px;
+    padding: 18px 16px 16px; box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+    animation: cardIn .28s ease;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .card-eyebrow { margin: 0 0 10px; font-size: 11.5px; font-weight: 700; letter-spacing: .06em; color: #8b9ab5; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700;
+    color: #c7d9ff; background: #1c2b45; border: 1px solid #2c405f; padding: 4px 10px; border-radius: 999px;
+  }
+  .badge.done { color: #bbf7d0; background: rgba(52, 211, 153, .12); border-color: rgba(52, 211, 153, .35); }
+  .card-title { margin: 12px 0 9px; font-size: 22px; line-height: 1.33; font-weight: 800; letter-spacing: -.4px; color: #f2f6ff; }
+  .card-why { margin: 0 0 16px; font-size: 13.5px; line-height: 1.62; color: #93a3bd; }
+
+  /* steps */
+  .steps { display: flex; flex-direction: column; gap: 8px; margin: 0 0 14px; }
+  .step {
+    display: flex; align-items: flex-start; gap: 11px; width: 100%; text-align: left;
+    background: #1e2939; border: 1px solid #2a394c; border-radius: 12px;
+    padding: 13px; color: #dfe7f4; font-size: 14.5px; line-height: 1.5;
+    font-family: inherit; cursor: pointer; transition: background .18s, border-color .18s;
+  }
+  .step:active { background: #243247; }
+  .step .box {
+    flex: 0 0 22px; width: 22px; height: 22px; border-radius: 7px; margin-top: 1px;
+    background: #3a475c; border: 1px solid #4b5b72; position: relative; transition: background .18s, border-color .18s;
+  }
+  .step.done .box { background: linear-gradient(180deg, #a5b4fc, #93c5fd); border-color: #a5b4fc; }
+  .step.done .box::after {
+    content: ""; position: absolute; left: 6.5px; top: 2.5px; width: 6px; height: 11px;
+    border: solid #0b1220; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg);
+  }
+  .step .txt { flex: 1; min-width: 0; }
+  .step .num { color: #9fb0c9; font-weight: 700; }
+  .step.done .txt { color: #7f8ea6; }
+  .step.done .num { color: #7f8ea6; }
+
+  /* links */
+  .link {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    margin: 0 0 8px; padding: 13px 14px; border-radius: 12px;
+    background: rgba(147, 197, 253, .1); border: 1px solid rgba(147, 197, 253, .3);
+    color: #c7dcff; font-size: 14px; font-weight: 700; text-decoration: none;
+  }
+  .link:active { background: rgba(147, 197, 253, .18); }
+  .link .arrow { font-size: 12px; opacity: .8; }
+
+  /* copy blocks */
+  .copy { background: #1b2637; border: 1px solid #2b3a4e; border-radius: 12px; padding: 13px; margin: 0 0 10px; }
+  .copy-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .copy-label { font-size: 11.5px; font-weight: 700; color: #93a3bd; letter-spacing: .01em; }
+  .copy-btn {
+    font-size: 11.5px; font-weight: 700; color: #dbe7fb; background: #26374f;
+    border: 1px solid #35496a; border-radius: 9px; padding: 6px 11px;
+    font-family: inherit; cursor: pointer; white-space: nowrap; flex: 0 0 auto;
+  }
+  .copy-btn:active { background: #2e4160; }
+  .copy-btn.copied { background: rgba(52, 211, 153, .18); border-color: rgba(52, 211, 153, .45); color: #bbf7d0; }
+  .copy-text {
+    margin: 0; font-size: 13px; line-height: 1.62; color: #c2cee1;
+    white-space: pre-wrap; word-break: break-word; font-family: inherit;
+    max-height: 248px; overflow: auto; -webkit-overflow-scrolling: touch;
+  }
+
+  /* call to action */
+  .cta {
+    margin-top: 6px; width: 100%; padding: 17px 16px; border: 0; border-radius: 14px;
+    background: linear-gradient(180deg, #b6c2ff, #9db4fd); color: #101a2c;
+    font-size: 16px; font-weight: 800; letter-spacing: -.2px; font-family: inherit; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(129, 140, 248, .28);
+  }
+  .cta:active { transform: translateY(1px); }
+  .cta.secondary { background: #22304a; color: #cfe0ff; border: 1px solid #33486a; box-shadow: none; margin-top: 10px; }
+  .cta.ghost { background: transparent; color: #8fa0bb; border: 1px solid #26344a; box-shadow: none; margin-top: 8px; font-weight: 700; font-size: 14px; padding: 14px; }
+
+  /* all done */
+  .done-card { text-align: center; padding: 26px 18px 20px; }
+  .check-big {
+    width: 58px; height: 58px; margin: 0 auto 14px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 28px; color: #0b1220;
+    background: linear-gradient(180deg, #86efac, #34d399); box-shadow: 0 10px 26px rgba(52, 211, 153, .3);
+  }
+  .done-card .card-title { margin: 0 0 8px; font-size: 20px; }
+  .done-card .card-why { margin: 0 0 6px; }
+
+  /* today list */
+  .all { margin-top: 26px; }
+  .all-title { margin: 0 0 10px; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; color: #7f8ea6; }
+  .all-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+  .all-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: #131c2d; border: 1px solid #202e45; border-radius: 12px; padding: 12px;
+    text-align: left; font-family: inherit; color: #cdd8e8; font-size: 13.5px; line-height: 1.45; cursor: pointer;
+  }
+  .all-item:active { background: #182338; }
+  .all-item.current { border-color: #4a5f86; background: #182338; }
+  .all-time { flex: 0 0 30px; font-size: 11px; font-weight: 700; color: #7f8ea6; }
+  .all-text { flex: 1; min-width: 0; }
+  .all-status { flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: #8fa0bb; }
+  .all-status.now { color: #a5b4fc; }
+  .all-status.done { color: #6ee7b7; }
+
+  .foot { margin: 26px 0 0; text-align: center; font-size: 11.5px; line-height: 1.6; color: #5d6b82; }
+
+  /* sheet */
+  .sheet {
+    position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end;
+    background: rgba(4, 8, 16, .62);
+    padding: 14px;
+  }
+  .sheet[hidden] { display: none; }
+  .sheet-box {
+    width: 100%; max-width: 452px; margin: 0 auto;
+    background: #162033; border: 1px solid #2a3b57; border-radius: 18px;
+    padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+  }
+  .sheet-box h3 { margin: 0 0 10px; font-size: 16px; font-weight: 800; color: #f2f6ff; }
+  .sheet-box p { margin: 0 0 9px; font-size: 13.5px; line-height: 1.65; color: #93a3bd; }
+  .btn-ghost {
+    width: 100%; margin-top: 8px; padding: 14px; border-radius: 12px;
+    background: #22304a; border: 1px solid #33486a; color: #cfe0ff;
+    font-size: 14.5px; font-weight: 700; font-family: inherit; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><span class="dot" aria-hidden="true"></span><span>비즈렌탈랩 오늘 할 일</span></div>
+    <button class="pill" id="pickleBtn" type="button">피클 관리</button>
+  </header>
+
+  <nav class="datenav" aria-label="날짜 이동">
+    <button class="nav-btn" id="prevDay" type="button" aria-label="이전 날">‹</button>
+    <div class="day-label" id="dayLabel">불러오는 중</div>
+    <button class="nav-btn" id="nextDay" type="button" aria-label="다음 날">›</button>
+  </nav>
+
+  <div class="progress">
+    <div class="track"><div class="fill" id="barFill"></div></div>
+    <div class="counter" id="counter">0 / 0</div>
+  </div>
+  <p class="summary" id="summaryLine">&nbsp;</p>
+
+  <main id="cardHost">
+    <article class="card"><p class="card-why" style="margin:0">오늘 할 일을 불러오는 중…</p></article>
+  </main>
+
+  <section class="all">
+    <h2 class="all-title">오늘 전체</h2>
+    <ul class="all-list" id="allList"></ul>
+  </section>
+
+  <footer class="foot">피클이 매일 정리해 둬요 · 최신 내용은 새로고침하면 바로 보여요</footer>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle">피클 관리</h3>
+    <p>피클이 매일 오늘 할 일을 이 순서대로 정리해 둡니다. 끝낸 표시는 이 휴대폰에만 저장돼요.</p>
+    <p>할 일이 바뀌면 피클이 목록을 새로 올리고, 이 화면은 새로고침만 하면 최신 내용으로 바뀝니다.</p>
+    <button class="btn-ghost" id="sheetClose" type="button">닫기</button>
+  </div>
+</div>
+
+<noscript>
+  <div class="app"><p class="card-why">이 페이지는 자바스크립트가 필요해요. 브라우저 설정에서 켜 주세요.</p></div>
+</noscript>
+
+<script id="fallback-tasks" type="application/json">{"title":"비즈렌탈랩 오늘 할 일","updated":"2026-11-22","days":[{"date":"2026-11-22","label":"일요일 11/22","tasks":[{"id":"sun-share-claude","time":"오후","duration":"15분","badge":"오후 · 15분","title":"클로드 안내 페이지 2개 공유 켜고 캡처 저장하기","why":"내일 월요일 통화 끝난 업체에 카톡으로 바로 보내려면, 지금 본인만 열 수 있는 잠금을 풀어야 해요.","steps":["아래 '파트너 1장 안내 열기' 버튼을 눌러 페이지를 열어요","오른쪽 위 공유(Share)를 눌러 '링크가 있는 사람 누구나'로 켜요","아래 '파트너 소개 접수 열기'도 눌러 똑같이 공유를 켜요","'파트너 1장 안내' 화면을 휴대폰으로 전체 스크롤 캡처해요","저장한 이미지 1장을 카톡 '나와의 채팅'에 올려 둬요"],"links":[{"label":"파트너 1장 안내 열기","url":"https://claude.ai/artifact/KdWBWQB9QbDwCg8EML2fmh"},{"label":"파트너 소개 접수 열기","url":"https://claude.ai/artifact/FcYc79bfvDhwjiCMAQeJNK"}],"copies":[]},{"id":"sun-shoot-video","time":"저녁","duration":"15분","badge":"저녁 · 15분","title":"20초 토킹헤드 영상 1편 찍어 피클에게 보내기","why":"인스타 릴스가 멈춰 있어 오늘 찍어 두면 내일 4채널에 같이 올릴 수 있어요. (자막·편집은 피클이 해요)","steps":["집 안 밝은 창가 자리를 정하고 휴대폰을 세로로 세워요","아래 20초 대본을 소리 내어 3번 읽어 봐요","5초만 시험 촬영해서 얼굴이 어둡지 않은지 확인해요","본 촬영을 1~2번 찍고 원본 파일 그대로 피클 채팅창에 보내요"],"copies":[{"label":"20초 촬영 대본","text":"가게 낼 때 사업자등록부터 내시면, 예비창업자 지원금을 못 받을 수 있어요. 예비창업패키지 같은 예비창업자 대상 사업은, 공고일 기준으로 사업자등록이 없어야 신청할 수 있거든요. 그래서 순서가 중요해요. 공고부터 확인하고, 사업자등록은 그다음. 공고는 K-Startup에서 확인하시고, 장비 준비 순서가 궁금하면 프로필 카톡으로 물어보세요."}]},{"id":"sun-thread","time":"오후","duration":"5분","badge":"오후 · 5분","title":"스레드 일요일 반응 글 1개 올리기","why":"요즘 스레드에서 제일 댓글 잘 붙는 '돈·실수 훈수형' 글이에요. 링크 없이 글만 올려서 반응을 모아요.","steps":["아래 문구를 복사해요","스레드 앱에 붙여 넣어 올려요 (현장 사진 1장 있으면 같이 올려도 좋아요)","댓글이 달리면 짧게 1줄로 답해요"],"copies":[{"label":"스레드 글","text":"장사나 부업 시작할 때\n남들 말만 믿고 돈 썼다가 제일 후회했던 거 딱 하나만 꼽자면 뭐야?\n\n내 주변 보면 꼭 \"이건 처음부터 안 해도 됐는데\" 하는 게 하나씩 있더라."}]},{"id":"sun-find-12","time":"오후","duration":"0분","badge":"오후 · 0분","title":"월요일 전화할 제주·부산 업체 12곳 찾기","why":"클로드가 오늘 숙제로 잡은 12곳 검색, 피클이 어젯밤에 전화번호·월요일 영업시간까지 이미 다 찾아 뒀어요!","preCompleted":true,"steps":["오늘 오후 40분 검색은 건너뛰어도 돼요","내일(월요일 11/23) 탭에 12곳 번호표가 이미 들어가 있어요","피클에게 \"시트랑 클로드 독스에도 올려 둬\"라고 하면 바로 반영해 드려요"],"copies":[]}]},{"date":"2026-11-23","label":"월요일 11/23","tasks":[{"id":"mon-calls","time":"오전","duration":"90분","badge":"오전 · 90분","title":"제주·부산 업체 10통 전화하고 카톡 안내 보내기","why":"피클이 찾아 둔 12곳(10곳 + 예비 2곳) 중 가시버시공방만 10시 오픈이고 나머지는 9시 반 전후부터 통화 가능해요. 10:00~11:30에 돌면 돼요.","steps":["이어폰과 메모를 준비하고 아래 '피클이 찾은 12곳 번호표'를 열어요","첫인사는 아래 '전화 첫마디'를 그대로 읽어요","보내도 된다고 한 곳에만 성함·카톡 번호를 받아 '카톡 안내 문구'를 보내요","통화 결과(관심/거절/재연락)만 피클에게 한 줄로 던져 주면 정리는 피클이 해요"],"copies":[{"label":"전화 첫마디 & 이렇게 답하기","text":"[전화 첫마디]\n\"안녕하세요 사장님, 비즈렌탈랩 김민수입니다. 30초만 여쭤봐도 될까요?\"\n\"요즘 견적까지 받고 '돈이 좀 모자라서요' 하면서 계약 미루는 손님 있으세요?\"\n→ 있다고 하면: \"저희가 그런 손님이 장비·가구·간판을 한 계약으로 묶어서 매달 나눠 낼 수 있게 금융사 심사를 연결해 드리고 있어요. 1장짜리 안내를 카톡으로 보내 드려도 될까요?\"\n→ 괜찮다고 하면: \"카톡 받으실 번호랑 성함만 알려 주세요.\"\n→ 마무리: \"손님 생기시면 안내에 있는 이름으로 연결만 해 주세요. 감사합니다!\"\n\n[이렇게 답하기]\n\"그런 손님 없어요\" → \"네, 알겠습니다. 혹시 생기실 때를 위해 안내만 카톡으로 하나 드려도 될까요?\"\n\"지금 바빠요\" → \"네, 내일 오전 11시쯤 다시 전화드려도 될까요?\" (끊고 '다음 연락일'에 내일 적기)\n\"대출이에요?\" → \"아니요, 현금을 빌려 드리는 게 아니라 장비를 렌탈로 들이고 매달 나눠 내는 계약이에요. 승인은 금융사 심사로 정해져요.\"\n\"저희한테 뭐 떨어져요?\" → \"소개 조건은 정리해서 따로 안내드릴게요.\" (금액은 말하지 않기)\n\"어느 금융사예요?\" → \"제휴 금융사 심사로 진행하고, 자세한 건 손님 상담 때 안내드려요.\"\n\n[쓰면 안 되는 말]\n대출 · 100% 승인 · 무조건 · 초기비용 0원 보장 · 전액 절세 · 부가세 환급\n\"초기비용 0원\"은 꼭 \"(심사 승인 시)\"와 같이 말하기"},{"label":"카톡 안내 문구","text":"안녕하세요, 방금 통화드린 비즈렌탈랩 김민수입니다.\n견적 받고 비용 때문에 망설이는 손님이 있으면, 장비·가구·간판을 한 계약으로 묶어 매달 나눠 내는 방법을 안내해 드립니다. (인테리어 공사·자재는 제외, 승인 여부와 조건은 금융사 심사에 따라 정해집니다)\n손님 연결은 손님 동의를 받은 뒤 아래 링크로 보내 주시면 됩니다.\n소개: (업체명)\n링크: https://claude.ai/artifact/FcYc79bfvDhwjiCMAQeJNK\n감사합니다!"},{"label":"피클이 찾은 12곳 번호표","text":"[1순위 · 명분이 분명한 곳]\n한국주방 · 제주 주방기구 · 064-747-4053 · 월 09:00~18:30\n㈜체리디자인 · 제주 상가 인테리어 · 010-8507-3789 · 월 08:30~18:00\n여명 제주가구연구소 · 제주 업소용 가구 · 010-2769-0608 · 월 09:00~18:00\n인더스페이스 · 부산 숙박 인테리어 · 051-316-1011 · 월 09:00~18:00\n신대한종합주방 · 부산 주방기구 · 051-724-2481 · 월 09:00~18:00\n\n[2순위]\n유진상사 · 제주 주방기구 · 064-702-8077 · 월 09:00~17:30\n가원광고 · 제주 간판 · 064-748-2541 · 월 08:00~19:00\n세미한인테리어 · 제주 상가 인테리어 · 064-803-0615 · 월 08:00~17:00\n사직종합주방 · 부산 주방기구 · 051-851-7001 · 월 09:00~18:00\n인디컴퍼니 · 부산 숙박 인테리어 · 0507-1321-0569 · 24시간 영업\n\n[예비 · 앞에서 연결 안 될 때]\n가시버시공방 · 제주 업소용 가구 · 064-724-0012 · 월 10:00~21:00 (10시 이후)\n삼삼종합기획 · 제주 간판 · 064-753-3504 · 월 09:00~18:00\n\n[통화 때 같이 확인할 것]\n유진상사 064-702-8077 / 064-702-8022 중 어느 번호인지\n체리디자인 010-8507-3789 / 064-901-0479 중 대표번호\n사직종합주방 051-851-7001 / 010-2646-7001\n신대한종합주방 051-724-2481 / 051-724-2485 (끝자리만 다름)"}]},{"id":"mon-shorts","time":"오후","duration":"20분","badge":"오후 · 20분","title":"숏폼 1편 4채널 올리기 (피클 편집본 확인 후)","why":"인스타·유튜브 쇼츠·틱톡·네이버 클립에 같은 영상을 채널 규칙에 맞게 한 번에 올려요.","steps":["피클이 편집해 준 영상 파일을 저장해요","인스타 릴스와 네이버 클립은 아래 캡션을 그대로 붙여 올려요","유튜브 쇼츠와 틱톡 설명란에는 링크 없이 카톡 채널명 '비즈렌탈랩'만 적어요","인스타 첫 댓글로 아래 고정댓글을 달고 고정해요"],"copies":[{"label":"캡션 & 해시태그 (인스타 · 네이버 클립)","text":"가게 차리기 전, 사업자등록부터 하면 손해일 수 있어요. (2026년 공고 기준, 신청 전 공식 공고 꼭 확인) #예비창업 #창업지원금 #창업준비 #예비창업패키지"},{"label":"인스타 고정댓글","text":"장비 준비 순서 필요하시면 '자료'라고 댓글 주세요"},{"label":"유튜브 쇼츠 · 틱톡 설명란","text":"가게 차리기 전 사업자등록 순서, 헷갈리시면 카톡 채널 '비즈렌탈랩'으로 물어보세요. (2026년 공고 기준, 신청 전 공식 공고 확인)"}]},{"id":"mon-thread-dm","time":"저녁","duration":"15분","badge":"저녁 · 15분","title":"스레드 글 1개 & 저녁 문의 답장하기","why":"오늘 올린 영상·글을 보고 온 문의는 그날 밤에 답해야 다음 대화로 이어져요.","steps":["스레드 앱에 아래 글을 올려요","인스타 DM(요청함 포함)·카톡 채널·네이버 폼을 확인해요","문의가 오면 아래 첫 답장을 복사해 보내요 (주민번호·사업자등록번호·신분증은 받지 않아요)"],"copies":[{"label":"스레드 글","text":"요즘 창업이나 부업 영상 보면\n\"소자본으로 누구나 쉽게\" 이런 말 진짜 많이 나오는데\n\n막상 현장 보면 처음 3개월 버틸 현금 없이 시작해서\n중간에 흔들리는 경우가 훨씬 많더라.\n\n다들 시작할 때 제일 크게 착각하는 게 뭐라고 봐?"},{"label":"문의 첫 답장","text":"안녕하세요, 비즈렌탈랩입니다. 문의 감사합니다!\n어떤 글(영상)을 보고 오셨는지, 오픈 예정 시기와 꼭 필요한 장비 2~3가지만 알려 주시면 맞춰서 안내드릴게요. 견적서가 있으면 사진으로 보내 주셔도 좋아요."}]}]}]}</script>
+<script>
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'brl-today-v1';
+
+  var allStore = {};
+  try { allStore = JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch (e) { allStore = {}; }
+
+  var state = { days: [], index: 0, selected: null, store: {} };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function saveStore() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(allStore)); } catch (e) {}
+  }
+  function storeFor(date) {
+    if (!allStore[date]) allStore[date] = {};
+    return allStore[date];
+  }
+  function todaySeoul() {
+    try {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    } catch (e) {
+      var d = new Date(Date.now() + 9 * 3600 * 1000);
+      return d.toISOString().slice(0, 10);
+    }
+  }
+
+  function day() { return state.days[state.index]; }
+  function ts(id) {
+    if (!state.store[id]) state.store[id] = {};
+    return state.store[id];
+  }
+  function isDone(task) {
+    var s = state.store[task.id];
+    return !!(task.preCompleted || (s && s.done));
+  }
+  function stepDone(task, i) {
+    var s = state.store[task.id];
+    if (s && s.steps && typeof s.steps[i] === 'boolean') return s.steps[i];
+    return !!task.preCompleted;
+  }
+  function currentTask() {
+    var d = day();
+    if (!d) return null;
+    if (state.selected) {
+      for (var i = 0; i < d.tasks.length; i++) if (d.tasks[i].id === state.selected) return d.tasks[i];
+    }
+    for (var j = 0; j < d.tasks.length; j++) if (!isDone(d.tasks[j])) return d.tasks[j];
+    return null;
+  }
+
+  /* ---------- rendering ---------- */
+
+  function cardHTML(task) {
+    if (!task) return doneHTML();
+    var doneTask = isDone(task);
+    var h = '';
+    h += '<article class="card">';
+    h += '<p class="card-eyebrow">' + (doneTask ? '끝낸 일' : '지금 할 일') + '</p>';
+    h += '<div class="badges"><span class="badge">' + esc(task.badge || task.time) + '</span>';
+    if (task.preCompleted) h += '<span class="badge done">피클 완료 ✓</span>';
+    else if (doneTask) h += '<span class="badge done">완료 ✓</span>';
+    h += '</div>';
+    h += '<h1 class="card-title">' + esc(task.title) + '</h1>';
+    if (task.why) h += '<p class="card-why">' + esc(task.why) + '</p>';
+
+    if (task.steps && task.steps.length) {
+      h += '<div class="steps">';
+      for (var i = 0; i < task.steps.length; i++) {
+        var on = stepDone(task, i);
+        h += '<button type="button" class="step' + (on ? ' done' : '') + '" data-step="' + i + '" aria-pressed="' + (on ? 'true' : 'false') + '">' +
+             '<span class="box" aria-hidden="true"></span>' +
+             '<span class="txt"><span class="num">' + (i + 1) + '.</span> ' + esc(task.steps[i]) + '</span></button>';
+      }
+      h += '</div>';
+    }
+
+    if (task.links && task.links.length) {
+      for (var l = 0; l < task.links.length; l++) {
+        h += '<a class="link" href="' + esc(task.links[l].url) + '" target="_blank" rel="noopener noreferrer">' +
+             esc(task.links[l].label) + '<span class="arrow" aria-hidden="true">↗</span></a>';
+      }
+    }
+
+    if (task.copies && task.copies.length) {
+      for (var c = 0; c < task.copies.length; c++) {
+        h += '<div class="copy"><div class="copy-head"><span class="copy-label">' + esc(task.copies[c].label) + '</span>' +
+             '<button type="button" class="copy-btn" data-copy="' + c + '">복사하기</button></div>' +
+             '<pre class="copy-text">' + esc(task.copies[c].text) + '</pre></div>';
+      }
+    }
+
+    if (doneTask) {
+      h += '<button type="button" class="cta" data-act="next">다음 일로 →</button>';
+    } else {
+      h += '<button type="button" class="cta" data-act="finish">이 일 끝났어요 → 다음 일</button>';
+    }
+    h += '</article>';
+    return h;
+  }
+
+  function doneHTML() {
+    var d = day();
+    var n = d ? d.tasks.length : 0;
+    return '<article class="card done-card">' +
+      '<div class="check-big" aria-hidden="true">✓</div>' +
+      '<h1 class="card-title">' + esc(d ? d.label : '오늘') + ' 할 일 다 끝났어요</h1>' +
+      '<p class="card-why">' + n + '개 전부 완료! 남은 시간은 내일 준비에 쓰면 돼요.</p>' +
+      '<button type="button" class="cta secondary" data-act="review">완료한 일 다시 보기</button>' +
+      '<button type="button" class="cta ghost" data-act="reset">체크 다시 하기</button>' +
+      '</article>';
+  }
+
+  function renderCard() {
+    $('cardHost').innerHTML = cardHTML(currentTask());
+  }
+
+  function statusOf(task, cur) {
+    if (task.preCompleted) return { cls: 'done', label: '피클 완료 ✓' };
+    if (isDone(task)) return { cls: 'done', label: '완료 ✓' };
+    if (cur && task.id === cur.id) return { cls: 'now', label: '지금' };
+    return { cls: '', label: '대기' };
+  }
+
+  function render(skipCard) {
+    var d = day();
+    if (!d) return;
+    $('dayLabel').textContent = d.label;
+    $('prevDay').disabled = state.index <= 0;
+    $('nextDay').disabled = state.index >= state.days.length - 1;
+
+    var total = d.tasks.length, done = 0;
+    for (var i = 0; i < total; i++) if (isDone(d.tasks[i])) done++;
+    $('counter').textContent = done + ' / ' + total;
+    $('barFill').style.width = total ? Math.round((done / total) * 100) + '%' : '0%';
+
+    var cur = currentTask();
+    $('summaryLine').textContent = cur
+      ? cur.title + ' (' + (cur.duration || cur.time) + ')'
+      : '오늘 할 일을 다 끝냈어요. 수고했어요!';
+
+    if (!skipCard) renderCard();
+
+    var ul = $('allList');
+    var html = '';
+    for (var k = 0; k < d.tasks.length; k++) {
+      var t = d.tasks[k], st = statusOf(t, cur);
+      html += '<li><button type="button" class="all-item' + (cur && t.id === cur.id ? ' current' : '') + '" data-task="' + esc(t.id) + '">' +
+        '<span class="all-time">' + esc(t.time || '') + '</span>' +
+        '<span class="all-text">' + esc(t.title) + '</span>' +
+        '<span class="all-status ' + st.cls + '">' + esc(st.label) + '</span></button></li>';
+    }
+    ul.innerHTML = html;
+  }
+
+  /* ---------- actions ---------- */
+
+  function copyText(txt, btn) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = txt;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.left = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, txt.length);
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(txt).catch(fallback);
+    } else {
+      fallback();
+    }
+    var old = btn.getAttribute('data-label') || btn.textContent;
+    btn.setAttribute('data-label', old);
+    btn.classList.add('copied');
+    btn.textContent = '복사됨 ✓';
+    clearTimeout(btn._t);
+    btn._t = setTimeout(function () {
+      btn.classList.remove('copied');
+      btn.textContent = old;
+    }, 1600);
+  }
+
+  function toggleStep(i) {
+    var task = currentTask();
+    if (!task) return;
+    var s = ts(task.id);
+    if (!s.steps) s.steps = [];
+    s.steps[i] = !stepDone(task, i);
+    saveStore();
+    renderCard();
+  }
+
+  function finishTask(task) {
+    var s = ts(task.id);
+    s.done = true;
+    s.at = new Date().toISOString();
+    if (!s.steps) s.steps = [];
+    for (var i = 0; i < task.steps.length; i++) s.steps[i] = true;
+    saveStore();
+
+    var d = day(), start = d.tasks.indexOf(task), next = null;
+    for (var k = 1; k <= d.tasks.length; k++) {
+      var t = d.tasks[(start + k) % d.tasks.length];
+      if (!isDone(t)) { next = t; break; }
+    }
+    state.selected = next ? next.id : null;
+    render();
+    try {
+      $('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
+  }
+
+  function nextOnly(task) {
+    var d = day(), start = d.tasks.indexOf(task), next = null;
+    for (var k = 1; k <= d.tasks.length; k++) {
+      var t = d.tasks[(start + k) % d.tasks.length];
+      if (!isDone(t)) { next = t; break; }
+    }
+    state.selected = next ? next.id : null;
+    render();
+  }
+
+  function resetDay() {
+    var d = day();
+    if (!window.confirm(d.label + ' 체크를 모두 지울까요?')) return;
+    allStore[d.date] = {};
+    state.store = allStore[d.date];
+    state.selected = null;
+    saveStore();
+    render();
+  }
+
+  $('cardHost').addEventListener('click', function (e) {
+    var t = e.target;
+    var stepBtn = t.closest ? t.closest('.step') : null;
+    if (stepBtn) { toggleStep(parseInt(stepBtn.getAttribute('data-step'), 10)); return; }
+
+    var copyBtn = t.closest ? t.closest('.copy-btn') : null;
+    if (copyBtn) {
+      var task = currentTask();
+      if (!task) return;
+      var c = task.copies[parseInt(copyBtn.getAttribute('data-copy'), 10)];
+      if (c) copyText(c.text, copyBtn);
+      return;
+    }
+
+    var actBtn = t.closest ? t.closest('[data-act]') : null;
+    if (actBtn) {
+      var act = actBtn.getAttribute('data-act');
+      var cur = currentTask();
+      if (act === 'finish' && cur) finishTask(cur);
+      else if (act === 'next' && cur) nextOnly(cur);
+      else if (act === 'review' && day()) { state.selected = day().tasks[0].id; render(); }
+      else if (act === 'reset') resetDay();
+    }
+  });
+
+  $('allList').addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-task]') : null;
+    if (!btn) return;
+    state.selected = btn.getAttribute('data-task');
+    render();
+    try {
+      $('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) {
+      window.scrollTo(0, 0);
+    }
+  });
+
+  function goDay(delta) {
+    var next = state.index + delta;
+    if (next < 0 || next >= state.days.length) return;
+    state.index = next;
+    state.selected = null;
+    state.store = storeFor(state.days[next].date);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('prevDay').addEventListener('click', function () { goDay(-1); });
+  $('nextDay').addEventListener('click', function () { goDay(1); });
+
+  $('pickleBtn').addEventListener('click', function () { $('sheet').hidden = false; });
+  $('sheetClose').addEventListener('click', function () { $('sheet').hidden = true; });
+  $('sheet').addEventListener('click', function (e) { if (e.target === $('sheet')) $('sheet').hidden = true; });
+
+  /* ---------- boot ---------- */
+
+  function start(data) {
+    var days = (data.days || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    if (!days.length) return fail();
+    state.days = days;
+
+    var t = todaySeoul(), idx = -1;
+    for (var i = 0; i < days.length; i++) if (days[i].date === t) idx = i;
+    if (idx < 0) {
+      var best = 0, bestDiff = Infinity;
+      for (var j = 0; j < days.length; j++) {
+        var diff = Math.abs(new Date(days[j].date + 'T00:00:00Z').getTime() - new Date(t + 'T00:00:00Z').getTime());
+        if (diff < bestDiff) { bestDiff = diff; best = j; }
+      }
+      idx = best;
+    }
+    state.index = idx;
+    state.store = storeFor(days[idx].date);
+    render();
+  }
+
+  function fail() {
+    $('dayLabel').textContent = '불러오기 실패';
+    $('cardHost').innerHTML = '<article class="card"><h1 class="card-title">목록을 불러오지 못했어요</h1>' +
+      '<p class="card-why">인터넷이 잠깐 끊겼거나 파일이 아직 올라가지 않았어요. 아래 버튼을 눌러 다시 열어 주세요.</p>' +
+      '<button type="button" class="cta" onclick="location.reload()">새로고침</button></article>';
+  }
+
+  var FALLBACK = null;
+  try { FALLBACK = JSON.parse($('fallback-tasks').textContent); } catch (e) { FALLBACK = null; }
+
+  if (window.fetch) {
+    fetch('tasks.json?v=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+      .then(function (d) {
+        if (!d || !d.days || !d.days.length) throw new Error('empty');
+        start(d);
+      })
+      .catch(function () {
+        if (FALLBACK && FALLBACK.days && FALLBACK.days.length) start(FALLBACK);
+        else fail();
+      });
+  } else if (FALLBACK && FALLBACK.days && FALLBACK.days.length) {
+    start(FALLBACK);
+  } else {
+    fail();
+  }
+})();
+</script>
+</body>
+</html>
