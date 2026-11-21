@@ -1,7 +1,7 @@
 # 비즈렌탈랩 오늘 할 일 (웹앱)
 
-휴대폰에서 열어 쓰는 하루 체크리스트. `today` 저장소(GitHub Pages)에 그대로 올리면
-`https://kregiryan-cmyk.github.io/today/` 에서 열립니다.
+휴대폰에서 열어 쓰는 하루 체크리스트. `kregiryan-cmyk/-` 저장소(GitHub Pages)에 그대로 올리면
+`https://kregiryan-cmyk.github.io/-/` 에서 열립니다.
 
 ## 파일
 
@@ -27,7 +27,7 @@
 ## 배포
 
 ```sh
-sh deploy.sh                 # 기본: kregiryan-cmyk/today
+sh deploy.sh                 # 기본: kregiryan-cmyk/-
 sh deploy.sh 계정/저장소      # 다른 이름
 ```
 
