@@ -104,6 +104,7 @@
     background: rgba(52, 211, 153, .14); border-color: rgba(52, 211, 153, .42);
   }
   .badge.proj-tag:active { background: rgba(52, 211, 153, .26); }
+  .badge.rollover { color: #fde68a; background: rgba(245, 158, 11, .14); border-color: rgba(245, 158, 11, .42); }
   .card-title { margin: 12px 0 9px; font-size: 22px; line-height: 1.33; font-weight: 800; letter-spacing: -.4px; color: #f2f6ff; }
   .card-why { margin: 0 0 14px; font-size: 13.5px; line-height: 1.62; color: #93a3bd; }
 
@@ -224,6 +225,7 @@
   .all-item:active { background: #182338; }
   .all-item.current { border-color: #4a5f86; background: #182338; }
   .all-time { flex: 0 0 auto; font-size: 11px; font-weight: 700; color: #7f8ea6; white-space: nowrap; }
+  .all-time.rollover { color: #fbbf24; }
   .all-text { flex: 1; min-width: 0; }
   .all-status { flex: 0 0 auto; font-size: 11.5px; font-weight: 700; color: #8fa0bb; }
   .all-status.now { color: #5eead4; }
@@ -375,6 +377,7 @@
   <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <h3 id="sheetTitle">피클 관리</h3>
     <p>피클이 매일 오늘 할 일을 이 순서대로 정리해 둡니다. 끝낸 표시는 이 휴대폰에만 저장돼요.</p>
+    <p>오늘 못 끝낸 할 일은 다음 날 화면 맨 위로 자동 이월돼요. 넘기고 싶은 지난 할 일은 아래 '지난 일이라 이번엔 넘길게요'를 누르면 됩니다.</p>
     <p>할 일이 바뀌면 피클이 목록을 새로 올리고, 이 화면은 새로고침만 하면 최신 내용으로 바뀝니다.</p>
     <p>🗺️ 프로젝트 지도에서 적는 <b>내 폰 별명 · 메모</b>는 이 휴대폰 저장소에만 남고 인터넷으로 보내지 않아요. 그래서 공개된 앱에는 고객 이름·번호가 한 글자도 없습니다.</p>
     <button class="btn-ghost" id="sheetClose" type="button">닫기</button>
@@ -427,28 +430,77 @@
       return d.toISOString().slice(0, 10);
     }
   }
+  function formatKoreanDate(iso) {
+    var p = String(iso || '').split('-');
+    if (p.length !== 3) return iso;
+    var dt = new Date(Date.UTC(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)));
+    var w = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'][dt.getUTCDay()];
+    return w + ' ' + parseInt(p[1], 10) + '/' + parseInt(p[2], 10);
+  }
 
   function day() { return state.days[state.index]; }
-  function ts(id) {
-    if (!state.store[id]) state.store[id] = {};
-    return state.store[id];
+  function tasksForDay(d) {
+    if (!d) return [];
+    var base = d.tasks || [];
+    var t = todaySeoul();
+    if (d.date !== t) return base;
+    var seen = {};
+    for (var i = 0; i < base.length; i++) {
+      seen[base[i].id] = true;
+      if (base[i].rolloverFrom) seen[base[i].rolloverFrom] = true;
+    }
+    var rolled = [];
+    for (var k = 0; k < state.days.length; k++) {
+      var prev = state.days[k];
+      if (!prev || prev.date >= t) continue;
+      var pStore = allStore[prev.date] || {};
+      var pTasks = prev.tasks || [];
+      for (var j = 0; j < pTasks.length; j++) {
+        var pt = pTasks[j];
+        if (!pt || pt.preCompleted || seen[pt.id]) continue;
+        var ps = pStore[pt.id];
+        if (ps && ps.skipped) continue;
+        if (ps && ps.done && ps.completedOn !== t) continue;
+        var clone = {};
+        for (var key in pt) if (Object.prototype.hasOwnProperty.call(pt, key)) clone[key] = pt[key];
+        clone._rolled = true;
+        clone._originDate = prev.date;
+        clone._originLabel = parseInt(prev.date.slice(5, 7), 10) + '/' + parseInt(prev.date.slice(8, 10), 10);
+        rolled.push(clone);
+        seen[pt.id] = true;
+      }
+    }
+    return rolled.concat(base);
+  }
+  function taskStoreDate(task) {
+    return (task && task._originDate) || (day() && day().date) || todaySeoul();
+  }
+  function ts(taskOrId) {
+    var dKey = (taskOrId && typeof taskOrId === 'object') ? taskStoreDate(taskOrId) : (day() && day().date);
+    var id = (taskOrId && typeof taskOrId === 'object') ? taskOrId.id : taskOrId;
+    var st = storeFor(dKey);
+    if (!st[id]) st[id] = {};
+    return st[id];
   }
   function isDone(task) {
-    var s = state.store[task.id];
+    var st = allStore[taskStoreDate(task)] || {};
+    var s = st[task.id];
     return !!(task.preCompleted || (s && s.done));
   }
   function stepDone(task, i) {
-    var s = state.store[task.id];
+    var st = allStore[taskStoreDate(task)] || {};
+    var s = st[task.id];
     if (s && s.steps && typeof s.steps[i] === 'boolean') return s.steps[i];
     return !!task.preCompleted;
   }
   function currentTask() {
     var d = day();
     if (!d) return null;
+    var list = tasksForDay(d);
     if (state.selected) {
-      for (var i = 0; i < d.tasks.length; i++) if (d.tasks[i].id === state.selected) return d.tasks[i];
+      for (var i = 0; i < list.length; i++) if (list[i].id === state.selected) return list[i];
     }
-    for (var j = 0; j < d.tasks.length; j++) if (!isDone(d.tasks[j])) return d.tasks[j];
+    for (var j = 0; j < list.length; j++) if (!isDone(list[j])) return list[j];
     return null;
   }
 
@@ -461,6 +513,9 @@
     h += '<article class="card">';
     h += '<p class="card-eyebrow">' + (doneTask ? '끝낸 일' : '지금 할 일') + '</p>';
     h += '<div class="badges"><span class="badge">' + esc(task.badge || task.time) + '</span>';
+    if (task._rolled) {
+      h += '<span class="badge rollover">📌 ' + esc(task._originLabel) + ' 이월</span>';
+    }
     if (task.projectTag) {
       h += '<button type="button" class="badge proj-tag" data-project="' + esc(task.projectId || '') + '">' + esc(task.projectTag) + '</button>';
     }
@@ -519,6 +574,9 @@
       h += '<button type="button" class="cta" data-act="next">다음 일로 →</button>';
     } else {
       h += '<button type="button" class="cta" data-act="finish">이 일 끝났어요 → 다음 일</button>';
+      if (task._rolled) {
+        h += '<button type="button" class="cta ghost" data-act="skip">지난 일이라 이번엔 넘길게요</button>';
+      }
     }
     h += '</article>';
     return h;
@@ -526,7 +584,7 @@
 
   function doneHTML() {
     var d = day();
-    var n = d ? d.tasks.length : 0;
+    var n = tasksForDay(d).length;
     return '<article class="card done-card">' +
       '<div class="check-big" aria-hidden="true">✓</div>' +
       '<h1 class="card-title">' + esc(d ? d.label : '오늘') + ' 할 일 다 끝났어요</h1>' +
@@ -554,8 +612,9 @@
     $('prevDay').disabled = state.index <= 0;
     $('nextDay').disabled = state.index >= state.days.length - 1;
 
-    var total = d.tasks.length, done = 0;
-    for (var i = 0; i < total; i++) if (isDone(d.tasks[i])) done++;
+    var list = tasksForDay(d);
+    var total = list.length, done = 0;
+    for (var i = 0; i < total; i++) if (isDone(list[i])) done++;
     $('counter').textContent = done + ' / ' + total;
     $('barFill').style.width = total ? Math.round((done / total) * 100) + '%' : '0%';
 
@@ -568,10 +627,10 @@
 
     var ul = $('allList');
     var html = '';
-    for (var k = 0; k < d.tasks.length; k++) {
-      var t = d.tasks[k], st = statusOf(t, cur);
+    for (var k = 0; k < list.length; k++) {
+      var t = list[k], st = statusOf(t, cur);
       html += '<li><button type="button" class="all-item' + (cur && t.id === cur.id ? ' current' : '') + '" data-task="' + esc(t.id) + '">' +
-        '<span class="all-time">' + esc(t.time || '') + '</span>' +
+        '<span class="all-time' + (t._rolled ? ' rollover' : '') + '">' + esc(t._rolled ? (t._originLabel + ' 이월') : (t.time || '')) + '</span>' +
         '<span class="all-text">' + esc(t.title) + '</span>' +
         '<span class="all-status ' + st.cls + '">' + esc(st.label) + '</span></button></li>';
     }
@@ -716,7 +775,7 @@
   function toggleStep(i) {
     var task = currentTask();
     if (!task) return;
-    var s = ts(task.id);
+    var s = ts(task);
     if (!s.steps) s.steps = [];
     s.steps[i] = !stepDone(task, i);
     saveStore();
@@ -724,16 +783,18 @@
   }
 
   function finishTask(task) {
-    var s = ts(task.id);
+    var s = ts(task);
     s.done = true;
     s.at = new Date().toISOString();
+    s.completedOn = day().date;
     if (!s.steps) s.steps = [];
-    for (var i = 0; i < task.steps.length; i++) s.steps[i] = true;
+    for (var i = 0; i < (task.steps || []).length; i++) s.steps[i] = true;
     saveStore();
 
-    var d = day(), start = d.tasks.indexOf(task), next = null;
-    for (var k = 1; k <= d.tasks.length; k++) {
-      var t = d.tasks[(start + k) % d.tasks.length];
+    var list = tasksForDay(day()), start = -1, next = null;
+    for (var idx = 0; idx < list.length; idx++) if (list[idx].id === task.id) { start = idx; break; }
+    for (var k = 1; k <= list.length; k++) {
+      var t = list[(start + k) % list.length];
       if (!isDone(t)) { next = t; break; }
     }
     state.selected = next ? next.id : null;
@@ -746,19 +807,51 @@
   }
 
   function nextOnly(task) {
-    var d = day(), start = d.tasks.indexOf(task), next = null;
-    for (var k = 1; k <= d.tasks.length; k++) {
-      var t = d.tasks[(start + k) % d.tasks.length];
+    var list = tasksForDay(day()), start = -1, next = null;
+    for (var idx = 0; idx < list.length; idx++) if (list[idx].id === task.id) { start = idx; break; }
+    for (var k = 1; k <= list.length; k++) {
+      var t = list[(start + k) % list.length];
       if (!isDone(t)) { next = t; break; }
     }
     state.selected = next ? next.id : null;
     render();
   }
 
+  function skipTask(task) {
+    var s = ts(task);
+    s.skipped = true;
+    s.skippedAt = new Date().toISOString();
+    saveStore();
+    var list = tasksForDay(day()), next = null;
+    for (var k = 0; k < list.length; k++) {
+      if (list[k].id !== task.id && !isDone(list[k])) { next = list[k]; break; }
+    }
+    state.selected = next ? next.id : null;
+    render();
+    try {
+      $('cardHost').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      window.scrollTo(0, 0);
+    }
+  }
+
   function resetDay() {
     var d = day();
     if (!window.confirm(d.label + ' 체크를 모두 지울까요?')) return;
     allStore[d.date] = {};
+    var list = tasksForDay(d);
+    for (var i = 0; i < list.length; i++) {
+      var t = list[i];
+      if (t._rolled && allStore[t._originDate] && allStore[t._originDate][t.id]) {
+        var ps = allStore[t._originDate][t.id];
+        if (ps.completedOn === d.date) {
+          delete ps.done;
+          delete ps.completedOn;
+          delete ps.at;
+          delete ps.steps;
+        }
+      }
+    }
     state.store = allStore[d.date];
     state.selected = null;
     saveStore();
@@ -788,8 +881,9 @@
       var act = actBtn.getAttribute('data-act');
       var cur = currentTask();
       if (act === 'finish' && cur) finishTask(cur);
+      else if (act === 'skip' && cur) skipTask(cur);
       else if (act === 'next' && cur) nextOnly(cur);
-      else if (act === 'review' && day()) { state.selected = day().tasks[0].id; render(); }
+      else if (act === 'review' && day()) { var rlist = tasksForDay(day()); if (rlist.length) { state.selected = rlist[0].id; render(); } }
       else if (act === 'reset') resetDay();
     }
   });
@@ -847,10 +941,17 @@
   function start(data) {
     var days = (data.days || []).slice().sort(function (a, b) { return a.date < b.date ? -1 : 1; });
     if (!days.length) return fail();
+    var t = todaySeoul();
+    var hasToday = false;
+    for (var h = 0; h < days.length; h++) if (days[h].date === t) { hasToday = true; break; }
+    if (!hasToday && t > days[0].date) {
+      days.push({ date: t, label: formatKoreanDate(t), tasks: [] });
+      days.sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+    }
     state.days = days;
     state.projects = data.projects || [];
 
-    var t = todaySeoul(), idx = -1;
+    var idx = -1;
     for (var i = 0; i < days.length; i++) if (days[i].date === t) idx = i;
     if (idx < 0) {
       var best = 0, bestDiff = Infinity;
