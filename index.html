@@ -696,7 +696,7 @@
       html += '<div class="all-group"><h3 class="group-head ' + gk + '">' + esc(groups[g].title) +
               '<span class="group-cnt">' + items.length + '개</span></h3>';
       if (!items.length) {
-        html += '<p class="group-empty">오늘은 ' + (gk === 'offline' ? '오프라인' : '온라인') + ' 할 일이 없어요. ' + esc(groups[g].hint) + '는 내일 카드에서 이어져요.</p>';
+        html += '<p class="group-empty">오늘은 ' + (gk === 'offline' ? '오프라인' : '온라인') + ' 할 일이 없어요. 다음 날 카드에서 이어져요.</p>';
       } else {
         html += '<ul class="all-list">';
         for (var k = 0; k < items.length; k++) {
