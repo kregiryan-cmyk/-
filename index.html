@@ -253,9 +253,11 @@
   .big-name { font-size: 14.5px; font-weight: 800; letter-spacing: -.3px; }
   .big-desc { font-size: 11px; line-height: 1.45; color: #8fa0bb; }
   .big-cntz {
-    flex: 0 0 auto; font-size: 10.5px; font-weight: 800; color: #9fb0c9;
-    background: #1c2b45; border: 1px solid #2c405f; border-radius: 999px; padding: 3px 8px; white-space: nowrap;
+    align-self: flex-start; font-size: 10.5px; font-weight: 800; color: #b7d2f7;
+    background: rgba(147, 197, 253, .12); border: 1px solid rgba(147, 197, 253, .3);
+    border-radius: 999px; padding: 2px 8px; margin-top: 3px; white-space: nowrap;
   }
+  .big.offline .big-cntz { color: #fbe6a6; background: rgba(252, 211, 77, .1); border-color: rgba(252, 211, 77, .3); }
   .chev { flex: 0 0 auto; font-size: 11px; color: #8fa0bb; transition: transform .18s ease; }
   .chev.up { transform: rotate(180deg); }
   .big-body { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 0; }
@@ -850,9 +852,9 @@
            '<span class="big-emoji" aria-hidden="true">' + meta.emoji + '</span>' +
            '<span class="big-main"><span class="big-name">' + esc(meta.title) + '</span>' +
            '<span class="big-desc">' + esc(meta.desc) + '</span>' +
+           '<span class="big-cntz">' + doneSum + '/' + totalSum + ' 완료' + (todaySum ? ' · 오늘 ' + todaySum : '') + '</span>' +
            barHTML(doneSum, totalSum) +
            '</span>' +
-           '<span class="big-cntz">' + doneSum + '/' + totalSum + ' 완료' + (todaySum ? ' · 오늘 ' + todaySum : '') + '</span>' +
            '<span class="chev' + (bigOpen ? ' up' : '') + '" aria-hidden="true">▾</span>' +
            '</button>';
       if (bigOpen) {
