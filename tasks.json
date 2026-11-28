@@ -212,7 +212,8 @@
               "a": "글씨가 작게 찍혔으면 폰을 가로로 돌려 다시 찍거나, 두 번 확대한 화면을 두 장으로 나눠 찍으세요. 업체 사장님이 폰으로 보는 자료라 크게 보이는 게 중요합니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-find-12",
@@ -241,7 +242,8 @@
               "q": "월요일이 공휴일이면?",
               "a": "연휴에는 대부분 문을 닫아요. 그때는 1순위 5곳만 화요일로 미루고, 월요일은 공급사 연락과 콘텐츠에 쓰면 됩니다."
             }
-          ]
+          ],
+          "mode": "online"
         },
         {
           "id": "sun-motel-file",
@@ -294,7 +296,8 @@
               "a": "표의 두 칸을 복사해 한 칸 더 만들면 됩니다. 오늘은 이 두 건만 확실히 채우고, 나머지는 파트너에게 '몇 건 더 있는지'만 물어보세요."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-ask-count",
@@ -339,7 +342,8 @@
               "a": "카카오톡 채널 관리자센터 앱 → 채팅 탭에서 확인해요. 앱이 없으면 카톡에서 '비즈렌탈랩' 채널을 검색해 1:1 채팅 목록을 보면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-insta",
@@ -392,7 +396,8 @@
               "a": "오후 6시 네이버 폼 테스트를 끝낸 뒤 프로필 링크를 새 비즈렌탈랩 폼이나 카톡 채널로 맞춰 두면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-thread",
@@ -434,7 +439,8 @@
               "a": "이 글에는 링크를 넣지 마세요. 링크가 있으면 노출이 줄어요. 프로필의 카톡 채널로 유도하는 게 이 글의 역할입니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-form-test",
@@ -480,7 +486,8 @@
               "a": "네, 010-0000-0000처럼 실제로 없는 번호를 쓰세요. 진짜 손님 번호를 넣으면 그분께 알림이 갈 수 있습니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sun-shoot-video",
@@ -529,7 +536,8 @@
               "a": "벽 한 면만 보이게 각도를 잡으세요. 물건이 걸리적거리면 카메라를 벽 쪽으로 돌리는 게 가장 간단합니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -575,7 +583,8 @@
               "a": "깔끔하게 '알겠습니다, 좋은 인연으로 소통해요!' 한 줄로 마무리하고 내륙 파트너 쪽에 집중하면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "mon-calls",
@@ -644,7 +653,8 @@
               "a": "9:40~11:30 안에 7통 이상 걸었으면 성공이에요. 남은 곳은 목~금 재연락 목록으로 넘기면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "mon-blog",
@@ -689,7 +699,8 @@
               "a": "깨진 장 번호만 짚어 '2번 장 손글씨만 다시 크게 그려 줘'라고 하면 바로 고쳐 줍니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "mon-supplier",
@@ -737,7 +748,8 @@
               "a": "손정탁 파트너에게 '지난번에 연결해 주신 LG 대리점 연락처 다시 한 번 주실 수 있을까요?' 한 줄 보내면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "mon-shorts",
@@ -793,7 +805,8 @@
               "a": "카드에 있는 '캡션 & 해시태그'를 그대로 붙이세요. 새로 쓰지 않아도 됩니다. 단, '2026년 공고 기준' 문장은 빼지 마세요."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "mon-thread-dm",
@@ -845,7 +858,8 @@
               "a": "이 앱은 렌탈 쪽이에요. '보험은 따로 안내드릴게요'라고 하고 피클에게 알려 주세요. 렌탈 안내와 섞으면 둘 다 헷갈립니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -895,7 +909,8 @@
               "a": "유흥주점·단란주점 허가 구역은 진행 대상이 아니에요. 일반 영업 구역만 별도 사업자·별도 견적으로 나뉘는지 확인하는 게 우선입니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "tue-calls",
@@ -957,7 +972,8 @@
               "a": "어제 재통화 + 본사 2곳 + 새 업체 3~4곳만 해도 충분해요. 결과 한 줄만 피클에게 주시면 나머지는 수요일 목록으로 이어집니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "tue-blog-publish",
@@ -1007,7 +1023,8 @@
               "a": "깨진 장 번호만 찍어 '2번 장 손글씨만 크게 다시 그려 줘'라고 하면 바로 고쳐 줍니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "tue-insta-shorts",
@@ -1055,7 +1072,8 @@
               "a": "아니요, 오늘 편한 것 1개만 하시면 됩니다. 얼굴 영상이 조회수가 더 잘 나오지만 바쁘실 땐 카드뉴스 5장으로 흐름을 잇는 쪽이 훨씬 빠릅니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "tue-thread-dm",
@@ -1094,7 +1112,8 @@
               "a": "이모티콘 빼고 1줄 담백하게 답하세요. 장비 고민이 보이면 '자세한 건 DM 주세요'까지만 쓰면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -1140,7 +1159,8 @@
               "a": "대출이 아니라 신품 동산 렌탈금융 구조이고, 실제 조건과 가능 여부는 금융사 심사 기준으로 확인된다고 담백하게 말씀하시면 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "wed-blog-image-upload",
@@ -1180,7 +1200,8 @@
               "a": "네! 원하시면 피클이 오늘 10시 블로그 배달에서 스크린골프 원고도 바로 다듬어 보관함에 올려 드릴 수 있어요."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "wed-insta-fridge-shorts",
@@ -1216,7 +1237,8 @@
               "a": "어제 오후 2시에 피클이 드린 '통장 비는 실수 3가지' 카드뉴스 6장 요청 문구를 챗GPT에 넣어 이미지로 먼저 올리셔도 됩니다."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "wed-naver-form-test",
@@ -1247,7 +1269,8 @@
           "deliverable": "네이버 폼 정상 수신 확인 1건 + 스레드 1글 업로드",
           "nextStep": "테스트가 확인되면 블로그 글과 클립 설명란에 안심하고 폼 링크를 계속 붙일 수 있습니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "wed-newzips-live",
@@ -1282,7 +1305,8 @@
           "deliverable": "뉴집스 특강 당일 인사/일정 조율 + 저녁 문의 답장 완료",
           "nextStep": "뉴집스 통화 일정이 잡히면 내일 아침 카드에 통화 직전 요약과 체크포인트를 올려 드립니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -1333,7 +1357,8 @@
               "a": "클로드 아티팩트 화면 오른쪽 위 공유 버튼에서 '링크가 있는 사람 누구나'가 켜져 있는지 5초만 확인해 주세요."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "thu-blog-image",
@@ -1368,7 +1393,8 @@
           "deliverable": "1080×1080 이미지 3장 → 피클 전송 (jibdon 임시저장 완료)",
           "nextStep": "피클이 임시저장에 넣어 드리면 제목·본문만 훑고 발행 버튼만 누르시면 됩니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "thu-insta-voucher",
@@ -1399,7 +1425,8 @@
           "deliverable": "피클에게 보낸 20초 촬영 원본 1개 → 릴스·쇼츠·틱톡·클립 업로드",
           "nextStep": "편집본을 받으시면 4채널에 한꺼번에 올리고, 저녁 8시에 들어온 문의를 확인합니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "thu-thread-form",
@@ -1429,7 +1456,8 @@
           "deliverable": "스레드 1글 업로드 + 폼 수신 확인",
           "nextStep": "댓글이 달리기 시작하면 캡처만 피클에게 보내 주세요. 1줄 답글 바로 뽑아 드립니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "thu-evening-replies",
@@ -1468,7 +1496,8 @@
           "deliverable": "뉴집스 후속 연락 1건 + 저녁 문의 답장 완료",
           "nextStep": "내일(금) 오전에는 이번 주 월~목 숫자를 묶어 다음 주 전략을 가볍게 정리합니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -1508,7 +1537,8 @@
               "a": "통화 녹음만 피클에게 던져 주시면 일 내용만 뽑아 손정탁 전용 시트에 바로 분류해 드려요."
             }
           ],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "fri-blog-images",
@@ -1543,7 +1573,8 @@
           "deliverable": "블로그 이미지 3장 수령 및 네이버 블로그 임시저장 완료",
           "nextStep": "임시저장이 끝나면 모바일에서 확인 후 발행 버튼만 누르시면 됩니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "fri-b2b-calls",
@@ -1572,7 +1603,8 @@
           "deliverable": "B2B 전화 10통 + 전 품목 1장 안내지 발송",
           "nextStep": "안내지를 받은 업체 중 견적 문의가 오는 곳은 바로 별도 프로젝트로 이어 붙입니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "offline"
         },
         {
           "id": "fri-insta-shortform",
@@ -1597,7 +1629,8 @@
           "deliverable": "20초 본인 얼굴 토킹헤드 1편 4채널 업로드",
           "nextStep": "저녁 9시에 조회수·반응 변화는 피클이 자동으로 체크합니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "fri-evening-thread-cut",
@@ -1621,7 +1654,8 @@
           "deliverable": "17시 기준 현장 우선순위 확정 + 퇴근길 스레드 1건 발행",
           "nextStep": "주말 사이 들어오는 문의만 가볍게 받고 월요일 오전 다음 단계로 넘어갑니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -1664,7 +1698,8 @@
           "deliverable": "제빙기 20초 숏폼 1편 4채널 업로드 + 고정댓글",
           "nextStep": "저녁 8시 문의 확인 때 '자료' 댓글 단 분들에게 체크리스트 링크를 보내면 됩니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sat-weekly-numbers",
@@ -1688,7 +1723,8 @@
           "deliverable": "주간 실적 1줄 정리 + 대기 현장 구분",
           "nextStep": "월요일(11/30) 오전 10시에 가장 준비된 현장 1건부터 바로 재개합니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sat-mon-10list",
@@ -1712,7 +1748,8 @@
           "deliverable": "월요일(11/30) 통화 대상 10곳 확보",
           "nextStep": "월요일 오전 10시 30분에 바로 첫 인사 전화로 들어갑니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         },
         {
           "id": "sat-evening-followup",
@@ -1749,7 +1786,8 @@
           "deliverable": "저녁 문의 답장 + 48시간 후속 + 스레드 1건 완료",
           "nextStep": "일요일은 전화·촬영 없이 스레드 1개와 금요일 신청자 후속만 가볍게 챙깁니다.",
           "tips": [],
-          "preCompleted": true
+          "preCompleted": true,
+          "mode": "online"
         }
       ]
     },
@@ -1805,7 +1843,8 @@
               "q": "그림이 3장이 아니어도 되나요?",
               "a": "표지 1장 + 본문 2장이면 충분해요. 2장만 나와도 그대로 보내 주세요 — 빈자리는 글자로 채우면 됩니다."
             }
-          ]
+          ],
+          "mode": "online"
         },
         {
           "id": "sun29-b2b-friend",
@@ -1862,7 +1901,8 @@
               "q": "답글이 바로 오면?",
               "a": "30분 안에 1줄로 답해 주세요. 대화를 길게 끌지 말고 '다음 글도 잘 볼게요' 정도로 마무리하는 게 오히려 좋아요."
             }
-          ]
+          ],
+          "mode": "online"
         },
         {
           "id": "sun29-ai-meeting",
@@ -1909,7 +1949,8 @@
               "q": "댓글이 하나도 안 달리면?",
               "a": "지우지 마세요. 스레드는 늦게 붙는 경우가 많아요. 대신 본인 댓글로 '내 경험 한 줄'을 덧붙이면 다시 노출됩니다."
             }
-          ]
+          ],
+          "mode": "online"
         }
       ]
     },
@@ -1963,7 +2004,8 @@
               "q": "시간이 없어 30분만 만나면?",
               "a": "그때는 1) 1순위 현장 2) 사업자 명의 3) 빠진 서류 이 3개만 확인해도 충분해요. 나머지는 카톡으로 받으면 됩니다."
             }
-          ]
+          ],
+          "mode": "offline"
         },
         {
           "id": "mon30-b2b-friend-2",
@@ -2006,7 +2048,8 @@
               "q": "일주일이 지나도 반응이 없으면?",
               "a": "그 곳은 내려놓으세요. 대신 상대 새 글에 한 번 더 공감 댓글을 남기고, 다른 후보를 한 곳 추가하는 게 시간을 아끼는 방법이에요."
             }
-          ]
+          ],
+          "mode": "online"
         },
         {
           "id": "mon30-sns-grant",
@@ -2057,7 +2100,8 @@
               "q": "유튜브·틱톡에 링크를 넣어도 되나요?",
               "a": "쇼츠와 초기 틱톡 설명란엔 외부 링크를 넣지 않아요. 대신 카톡 채널명 '비즈렌탈랩'만 안내하면 됩니다."
             }
-          ]
+          ],
+          "mode": "online"
         }
       ]
     }
